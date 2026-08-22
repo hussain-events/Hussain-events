@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#123d2a">
+<link rel="manifest" href="manifest.json">
+<title>Hussain Events | Full Business</title>
+<style>
+:root{--green:#123d2a;--green2:#1d5a3d;--gold:#c9a227;--cream:#faf8f1;--ink:#18231e;--muted:#68736d;--line:#dfe6e1;--danger:#a52828}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Nastaliq Urdu",sans-serif;background:#f4f6f4;color:var(--ink)}
+button,input,select{font:inherit}button{cursor:pointer}.login{min-height:100vh;display:grid;place-items:center;background:linear-gradient(135deg,var(--green),#071f16);padding:20px}
+.loginbox{width:min(430px,100%);background:#fff;border-radius:18px;padding:30px;box-shadow:0 20px 60px #0005;text-align:center;border-top:5px solid var(--gold)}
+.logo{width:220px;max-width:80%;object-fit:contain}.pin{width:100%;padding:13px;border:1px solid var(--line);border-radius:9px;margin:18px 0 10px}
+.primary{background:var(--green);color:#fff;border:0;padding:11px 16px;border-radius:8px}.gold{color:var(--gold)}.muted{color:var(--muted);font-size:13px}
+#app{display:none}.top{background:var(--green);color:#fff;padding:12px 18px;position:sticky;top:0;z-index:20;box-shadow:0 2px 10px #0002}
+.brand{display:flex;align-items:center;gap:12px}.brand img{width:70px;height:52px;object-fit:contain;background:#fff0}.brand h1{font-size:20px;margin:0}.brand small{opacity:.8}
+.nav{background:#fff;display:flex;gap:7px;overflow:auto;padding:8px 10px;position:sticky;top:76px;z-index:19;border-bottom:1px solid var(--line)}
+.nav button{border:0;background:#eef2ef;padding:9px 13px;border-radius:8px;white-space:nowrap}.nav .active{background:var(--green);color:#fff}
+main{max-width:1250px;margin:auto;padding:16px}.page{display:none}.page.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px #00000009}
+.metric{font-size:25px;font-weight:700;margin-top:6px}.metric.gold{color:#9c7810}.profit{color:#17683e}.loss{color:var(--danger)}
+h2{margin-top:0}.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
+input,select{width:100%;padding:10px;border:1px solid #ccd6d0;border-radius:8px;background:#fff}
+.full{grid-column:1/-1}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;white-space:nowrap}th{background:var(--cream)}
+.action{border:0;border-radius:6px;padding:6px 9px}.del{background:#f8dddd;color:#8f1e1e}.edit{background:#e7f0ea;color:#174e35}
+.badge{display:inline-block;padding:4px 8px;border-radius:20px;background:#edf4ef;font-size:12px}.badge.gold{background:#fbf5df;color:#8d6c0b}
+.alert{padding:10px;border-radius:8px;background:#fff4d8;color:#765800;margin:8px 0}.two{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+@media(max-width:760px){.two{grid-template-columns:1fr}.nav{top:76px}.brand img{width:58px}.brand h1{font-size:17px}}
+</style>
+</head>
+<body>
+<div id="login" class="login"><div class="loginbox">
+<img src="hussain-events-logo.png" class="logo" alt="Hussain Events">
+<h2>Hussain Events</h2><div class="muted">Full Business Management System</div>
+<input id="pin" class="pin" type="password" inputmode="numeric" maxlength="6" placeholder="PIN / پن">
+<button class="primary" style="width:100%" onclick="doLogin()">Login / داخل ہوں</button>
+<p class="muted">Demo access PIN: <b>123456</b>. Production deployment must replace this with server-side authentication.</p>
+</div></div>
+
+<div id="app">
+<div class="top"><div class="brand"><img src="hussain-events-logo.png" alt="Hussain Events"><div><h1>Hussain Events</h1><small>Marriage Hall & Event Management</small></div></div></div>
+<div class="nav" id="nav">
+<button class="active" onclick="go('dashboard',this)">Dashboard / ڈیش بورڈ</button>
+<button onclick="go('bookings',this)">Bookings / بکنگ</button>
+<button onclick="go('calendar',this)">Calendar / کیلنڈر</button>
+<button onclick="go('accounts',this)">Accounts / حسابات</button>
+<button onclick="go('inventory',this)">Stock / اسٹاک</button>
+<button onclick="go('staff',this)">Staff / عملہ</button>
+<button onclick="go('customers',this)">Customers / گاہک</button>
+<button onclick="go('reports',this)">Reports / رپورٹس</button>
+<button onclick="logout()">Logout</button>
+</div>
+<main>
+
+<section id="dashboard" class="page active">
+<div class="cards">
+<div class="card">Total Bookings / کل بکنگ<div class="metric" id="dBookings">0</div></div>
+<div class="card">Revenue / آمدن<div class="metric gold" id="dRevenue">Rs 0</div></div>
+<div class="card">Expenses / اخراجات<div class="metric" id="dExpenses">Rs 0</div></div>
+<div class="card">Net Profit / خالص منافع<div class="metric profit" id="dProfit">Rs 0</div></div>
+<div class="card">Advance / ایڈوانس<div class="metric" id="dAdvance">Rs 0</div></div>
+<div class="card">Outstanding / بقایا<div class="metric loss" id="dDue">Rs 0</div></div>
+</div>
+<div class="two"><div class="card"><h3>Upcoming Events / آنے والے پروگرام</h3><div id="upcoming"></div></div>
+<div class="card"><h3>Low Stock / کم اسٹاک</h3><div id="lowstock"></div></div></div>
+</section>
+
+<section id="bookings" class="page">
+<div class="card"><h2>New Booking / نئی بکنگ</h2><form id="bookingForm">
+<div><label>Customer / گاہک</label><input name="customer" required></div>
+<div><label>Mobile / موبائل</label><input name="mobile"></div>
+<div><label>Event Date / تاریخ</label><input name="date" type="date" required></div>
+<div><label>Event Type / پروگرام</label><select name="type"><option>Wedding / شادی</option><option>Mehndi / مہندی</option><option>Barat / بارات</option><option>Walima / ولیمہ</option><option>Corporate / کارپوریٹ</option><option>Other / دیگر</option></select></div>
+<div><label>Guests / مہمان</label><input name="guests" type="number" required></div>
+<div><label>Per Head / فی کس ریٹ</label><input name="rate" type="number" required></div>
+<div><label>Hall Charges / ہال چارجز</label><input name="hall" type="number" value="0"></div>
+<div><label>Decoration / ڈیکوریشن</label><input name="decor" type="number" value="0"></div>
+<div><label>Generator / جنریٹر</label><input name="generator" type="number" value="0"></div>
+<div><label>Other / دیگر</label><input name="other" type="number" value="0"></div>
+<div><label>Discount / رعایت</label><input name="discount" type="number" value="0"></div>
+<div><label>Advance / ایڈوانس</label><input name="advance" type="number" value="0"></div>
+<div class="full"><button class="primary">Save Booking / بکنگ محفوظ کریں</button></div>
+</form></div>
+<div class="card tablewrap"><h3>Booking Register / بکنگ رجسٹر</h3><table><thead><tr><th>ID</th><th>Date</th><th>Customer</th><th>Event</th><th>Guests</th><th>Total</th><th>Advance</th><th>Due</th><th>Status</th><th>Action</th></tr></thead><tbody id="bookingRows"></tbody></table></div>
+</section>
+
+<section id="calendar" class="page"><div class="card"><h2>Event Calendar / پروگرام کیلنڈر</h2><div id="calendarList"></div></div></section>
+
+<section id="accounts" class="page">
+<div class="card"><h2>Daily Expense / روزانہ اخراجات</h2><form id="expenseForm">
+<div><label>Date / تاریخ</label><input name="date" type="date" required></div>
+<div><label>Category / قسم</label><select name="cat"><option>Food / کھانا</option><option>Electricity / بجلی</option><option>Gas / گیس</option><option>Diesel / ڈیزل</option><option>Staff / عملہ</option><option>Cleaning / صفائی</option><option>Security / سیکیورٹی</option><option>Water / پانی</option><option>Maintenance / مرمت</option><option>Transport / ٹرانسپورٹ</option><option>Marketing / تشہیر</option><option>Other / دیگر</option></select></div>
+<div><label>Paid To / ادائیگی</label><input name="paidto"></div><div><label>Description / تفصیل</label><input name="desc"></div>
+<div><label>Amount / رقم</label><input name="amount" type="number" required></div><div><label>Method / طریقہ</label><select name="method"><option>Cash / نقد</option><option>Bank / بینک</option><option>Online</option></select></div>
+<div class="full"><button class="primary">Save Expense / خرچ محفوظ کریں</button></div></form></div>
+<div class="card tablewrap"><h3>Expense Register / اخراجات رجسٹر</h3><table><thead><tr><th>Date</th><th>Category</th><th>Paid To</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody id="expenseRows"></tbody></table></div>
+</section>
+
+<section id="inventory" class="page">
+<div class="card"><h2>Inventory / اسٹاک</h2><form id="stockForm">
+<div><label>Item / چیز</label><input name="item" required></div><div><label>Unit / اکائی</label><input name="unit" placeholder="kg, litre, piece"></div>
+<div><label>Quantity / مقدار</label><input name="qty" type="number" required></div><div><label>Unit Cost / فی یونٹ قیمت</label><input name="cost" type="number" value="0"></div>
+<div><label>Reorder Level / کم از کم حد</label><input name="reorder" type="number" value="0"></div>
+<div><label>Supplier / سپلائر</label><input name="supplier"></div><div class="full"><button class="primary">Save Stock / اسٹاک محفوظ کریں</button></div></form></div>
+<div class="card tablewrap"><table><thead><tr><th>Item</th><th>Unit</th><th>Qty</th><th>Value</th><th>Supplier</th><th>Status</th><th>Action</th></tr></thead><tbody id="stockRows"></tbody></table></div>
+</section>
+
+<section id="staff" class="page">
+<div class="card"><h2>Staff / عملہ</h2><form id="staffForm">
+<div><label>Name / نام</label><input name="name" required></div><div><label>Role / عہدہ</label><input name="role"></div>
+<div><label>Salary / تنخواہ</label><input name="salary" type="number"></div><div><label>Advance / ایڈوانس</label><input name="advance" type="number" value="0"></div>
+<div><label>Contact / رابطہ</label><input name="contact"></div><div class="full"><button class="primary">Save Staff / عملہ محفوظ کریں</button></div></form></div>
+<div class="card tablewrap"><table><thead><tr><th>Name</th><th>Role</th><th>Salary</th><th>Advance</th><th>Net Pay</th><th>Action</th></tr></thead><tbody id="staffRows"></tbody></table></div>
+</section>
+
+<section id="customers" class="page"><div class="card"><h2>Customer Ledger / گاہک کھاتہ</h2><div class="tablewrap"><table><thead><tr><th>Customer</th><th>Mobile</th><th>Bookings</th><th>Total</th><th>Advance</th><th>Due</th></tr></thead><tbody id="customerRows"></tbody></table></div></div></section>
+
+<section id="reports" class="page">
+<div class="cards"><div class="card">Revenue / آمدن<div class="metric gold" id="rRevenue">Rs 0</div></div><div class="card">Expenses / اخراجات<div class="metric" id="rExpenses">Rs 0</div></div><div class="card">Profit / منافع<div class="metric profit" id="rProfit">Rs 0</div></div></div>
+<div class="card"><h2>Business Report / کاروباری رپورٹ</h2><div id="reportText"></div><button class="primary" onclick="window.print()">Print / پرنٹ</button></div>
+</section>
+
+</main></div>
+<script>
+const KEY={b:"he_bookings_v2",e:"he_expenses_v2",s:"he_stock_v2",st:"he_staff_v2"};
+const get=k=>JSON.parse(localStorage.getItem(KEY[k])||"[]"), set=(k,v)=>localStorage.setItem(KEY[k],JSON.stringify(v));
+const money=n=>"Rs "+Number(n||0).toLocaleString();
+function doLogin(){if(document.getElementById("pin").value==="123456"){sessionStorage.setItem("he_auth","1");openApp()}else alert("Invalid PIN / غلط PIN")}
+function openApp(){login.style.display="none";app.style.display="block";render()}
+function logout(){sessionStorage.removeItem("he_auth");location.reload()}
+function go(id,btn){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");render()}
+function del(k,n){let a=get(k);a.splice(n,1);set(k,a);render()}
+function render(){
+ const b=get("b"),e=get("e"),s=get("s"),st=get("st");
+ const rev=b.reduce((a,x)=>a+x.total,0), exp=e.reduce((a,x)=>a+x.amount,0), adv=b.reduce((a,x)=>a+x.advance,0), due=b.reduce((a,x)=>a+x.due,0);
+ dBookings.textContent=b.length;dRevenue.textContent=money(rev);dExpenses.textContent=money(exp);dProfit.textContent=money(rev-exp);dAdvance.textContent=money(adv);dDue.textContent=money(due);
+ bookingRows.innerHTML=b.map((x,n)=>`<tr><td>${x.id}</td><td>${x.date}</td><td>${x.customer}</td><td>${x.type}</td><td>${x.guests}</td><td>${money(x.total)}</td><td>${money(x.advance)}</td><td>${money(x.due)}</td><td><span class="badge ${x.due<=0?'gold':''}">${x.due<=0?'Paid':'Pending'}</span></td><td><button class="action del" onclick="del('b',${n})">Delete</button></td></tr>`).join("");
+ expenseRows.innerHTML=e.map((x,n)=>`<tr><td>${x.date}</td><td>${x.cat}</td><td>${x.paidto||""}</td><td>${x.desc||""}</td><td>${money(x.amount)}</td><td><button class="action del" onclick="del('e',${n})">Delete</button></td></tr>`).join("");
+ stockRows.innerHTML=s.map((x,n)=>`<tr><td>${x.item}</td><td>${x.unit||""}</td><td>${x.qty}</td><td>${money(x.qty*x.cost)}</td><td>${x.supplier||""}</td><td>${x.qty<=x.reorder?'<span class="badge" style="color:#a52828">REORDER</span>':'OK'}</td><td><button class="action del" onclick="del('s',${n})">Delete</button></td></tr>`).join("");
+ staffRows.innerHTML=st.map((x,n)=>`<tr><td>${x.name}</td><td>${x.role||""}</td><td>${money(x.salary)}</td><td>${money(x.advance)}</td><td>${money(x.salary-x.advance)}</td><td><button class="action del" onclick="del('st',${n})">Delete</button></td></tr>`).join("");
+ const today=new Date().toISOString().slice(0,10);
+ upcoming.innerHTML=b.filter(x=>x.date>=today).sort((a,c)=>a.date.localeCompare(c.date)).slice(0,10).map(x=>`<p><b>${x.date}</b> — ${x.customer} — ${x.type} — ${x.guests} guests — Due ${money(x.due)}</p>`).join("")||"<p class=muted>No upcoming events / کوئی پروگرام نہیں</p>";
+ lowstock.innerHTML=s.filter(x=>x.qty<=x.reorder).map(x=>`<p class="alert">${x.item}: ${x.qty} ${x.unit||""} — Reorder / دوبارہ خریدیں</p>`).join("")||"<p class=muted>All stock levels OK</p>";
+ calendarList.innerHTML=b.sort((a,c)=>a.date.localeCompare(c.date)).map(x=>`<div class="card"><b>${x.date}</b> — ${x.customer} — ${x.type} — ${x.guests} guests — ${money(x.total)}</div>`).join("")||"<p>No bookings</p>";
+ const map={};b.forEach(x=>{map[x.customer]??={mobile:x.mobile,total:0,adv:0,due:0,count:0};map[x.customer].total+=x.total;map[x.customer].adv+=x.advance;map[x.customer].due+=x.due;map[x.customer].count++});
+ customerRows.innerHTML=Object.entries(map).map(([name,x])=>`<tr><td>${name}</td><td>${x.mobile||""}</td><td>${x.count}</td><td>${money(x.total)}</td><td>${money(x.adv)}</td><td>${money(x.due)}</td></tr>`).join("");
+ rRevenue.textContent=money(rev);rExpenses.textContent=money(exp);rProfit.textContent=money(rev-exp);
+ reportText.innerHTML=`<p><b>Total Bookings / کل بکنگ:</b> ${b.length}</p><p><b>Total Revenue / کل آمدن:</b> ${money(rev)}</p><p><b>Total Expenses / کل اخراجات:</b> ${money(exp)}</p><p><b>Net Profit / خالص منافع:</b> ${money(rev-exp)}</p><p><b>Advance / ایڈوانس:</b> ${money(adv)}</p><p><b>Outstanding / بقایا:</b> ${money(due)}</p>`;
+}
+bookingForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),guests=+f.get("guests"),rate=+f.get("rate"),charges=["hall","decor","generator","other"].reduce((a,k)=>a+(+f.get(k)||0),0),discount=+f.get("discount")||0,advance=+f.get("advance")||0,total=Math.max(0,guests*rate+charges-discount),a=get("b");a.push({id:"HE-"+String(Date.now()).slice(-6),customer:f.get("customer"),mobile:f.get("mobile"),date:f.get("date"),type:f.get("type"),guests,rate,total,advance,due:total-advance});set("b",a);e.target.reset();render();alert("Booking saved / بکنگ محفوظ ہوگئی")}
+expenseForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("e");a.push({date:f.get("date"),cat:f.get("cat"),paidto:f.get("paidto"),desc:f.get("desc"),amount:+f.get("amount"),method:f.get("method")});set("e",a);e.target.reset();render()}
+stockForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("s");a.push({item:f.get("item"),unit:f.get("unit"),qty:+f.get("qty"),cost:+f.get("cost"),reorder:+f.get("reorder"),supplier:f.get("supplier")});set("s",a);e.target.reset();render()}
+staffForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("st");a.push({name:f.get("name"),role:f.get("role"),salary:+f.get("salary"),advance:+f.get("advance"),contact:f.get("contact")});set("st",a);e.target.reset();render()}
+if(sessionStorage.getItem("he_auth")==="1")openApp();
+</script>
+</body></html>
