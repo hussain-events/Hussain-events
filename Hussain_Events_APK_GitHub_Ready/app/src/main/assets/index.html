@@ -167,7 +167,52 @@ function render(){
  rRevenue.textContent=money(rev);rExpenses.textContent=money(exp);rProfit.textContent=money(rev-exp);
  reportText.innerHTML=`<p><b>Total Bookings / کل بکنگ:</b> ${b.length}</p><p><b>Total Revenue / کل آمدن:</b> ${money(rev)}</p><p><b>Total Expenses / کل اخراجات:</b> ${money(exp)}</p><p><b>Net Profit / خالص منافع:</b> ${money(rev-exp)}</p><p><b>Advance / ایڈوانس:</b> ${money(adv)}</p><p><b>Outstanding / بقایا:</b> ${money(due)}</p>`;
 }
-bookingForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),guests=+f.get("guests"),rate=+f.get("rate"),charges=["hall","decor","generator","other"].reduce((a,k)=>a+(+f.get(k)||0),0),discount=+f.get("discount")||0,advance=+f.get("advance")||0,total=Math.max(0,guests*rate+charges-discount),a=get("b");a.push({id:"HE-"+String(Date.now()).slice(-6),customer:f.get("customer"),mobile:f.get("mobile"),date:f.get("date"),type:f.get("type"),guests,rate,total,advance,due:total-advance});set("b",a);e.target.reset();render();alert("Booking saved / بکنگ محفوظ ہوگئی")}
+bookingForm.onsubmit = async e => {
+  e.preventDefault();
+
+  let f = new FormData(e.target);
+  let guests = +f.get("guests");
+  let rate = +f.get("rate");
+
+  let charges = ["hall","decor","generator","other"]
+    .reduce((a,k) => a + (+f.get(k) || 0), 0);
+
+  let discount = +f.get("discount") || 0;
+  let advance = +f.get("advance") || 0;
+  let total = Math.max(0, guests * rate + charges - discount);
+
+  let id = "HE-" + String(Date.now()).slice(-6);
+
+  try {
+    await db.collection("Events").add({
+      id: id,
+      customerName: f.get("customer"),
+      mobile: f.get("mobile"),
+      eventDate: f.get("date"),
+      eventType: f.get("type"),
+      guests: guests,
+      rate: rate,
+      hallCharges: +f.get("hall") || 0,
+      decoration: +f.get("decor") || 0,
+      generator: +f.get("generator") || 0,
+      otherCharges: +f.get("other") || 0,
+      discount: discount,
+      totalAmount: total,
+      advanceAmount: advance,
+      remainingAmount: total - advance,
+      venue: "Hussain Events",
+      status: (total - advance) <= 0 ? "Paid" : "Booked",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    e.target.reset();
+    alert("Booking saved to Firebase / بکنگ محفوظ ہوگئی");
+    await render();
+  } catch (error) {
+    console.error(error);
+    alert("Booking save failed: " + error.message);
+  }
+};
 expenseForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("e");a.push({date:f.get("date"),cat:f.get("cat"),paidto:f.get("paidto"),desc:f.get("desc"),amount:+f.get("amount"),method:f.get("method")});set("e",a);e.target.reset();render()}
 stockForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("s");a.push({item:f.get("item"),unit:f.get("unit"),qty:+f.get("qty"),cost:+f.get("cost"),reorder:+f.get("reorder"),supplier:f.get("supplier")});set("s",a);e.target.reset();render()}
 staffForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("st");a.push({name:f.get("name"),role:f.get("role"),salary:+f.get("salary"),advance:+f.get("advance"),contact:f.get("contact")});set("st",a);e.target.reset();render()}
