@@ -150,6 +150,21 @@ function openApp(){login.style.display="none";app.style.display="block";render()
 function logout(){sessionStorage.removeItem("he_auth");location.reload()}
 function go(id,btn){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");render()}
 function del(k,n){let a=get(k);a.splice(n,1);set(k,a);render()}
+ async function loadEventsFromFirebase() {
+  try {
+    const snapshot = await db.collection("Events")
+      .orderBy("eventDate")
+      .get();
+
+    return snapshot.docs.map(doc => ({
+      firestoreId: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error("Firebase Events Error:", error);
+    return [];
+  }
+}
 function render(){
  const b=get("b"),e=get("e"),s=get("s"),st=get("st");
  const rev=b.reduce((a,x)=>a+x.total,0), exp=e.reduce((a,x)=>a+x.amount,0), adv=b.reduce((a,x)=>a+x.advance,0), due=b.reduce((a,x)=>a+x.due,0);
