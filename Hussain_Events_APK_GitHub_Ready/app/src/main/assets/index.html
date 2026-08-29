@@ -156,17 +156,30 @@ function del(k,n){let a=get(k);a.splice(n,1);set(k,a);render()}
       .orderBy("eventDate")
       .get();
 
-    return snapshot.docs.map(doc => ({
-      firestoreId: doc.id,
-      ...doc.data()
-    }));
+    return snapshot.docs.map(doc => {
+  const x = doc.data();
+
+  return {
+    firestoreId: doc.id,
+    id: x.id || doc.id,
+    customer: x.customerName || "",
+    mobile: x.mobile || "",
+    date: x.eventDate || "",
+    type: x.eventType || "",
+    guests: Number(x.guests || 0),
+    rate: Number(x.rate || 0),
+    total: Number(x.totalAmount || 0),
+    advance: Number(x.advanceAmount || 0),
+    due: Number(x.remainingAmount || 0)
+  };
+});
   } catch (error) {
     console.error("Firebase Events Error:", error);
     return [];
   }
 }
-function render(){
- const b=get("b"),e=get("e"),s=get("s"),st=get("st");
+async function render(){
+const b=await loadEventsFromFirebase(),e=get("e"),s=get("s"),st=get("st");
  const rev=b.reduce((a,x)=>a+x.total,0), exp=e.reduce((a,x)=>a+x.amount,0), adv=b.reduce((a,x)=>a+x.advance,0), due=b.reduce((a,x)=>a+x.due,0);
  dBookings.textContent=b.length;dRevenue.textContent=money(rev);dExpenses.textContent=money(exp);dProfit.textContent=money(rev-exp);dAdvance.textContent=money(adv);dDue.textContent=money(due);
  bookingRows.innerHTML=b.map((x,n)=>`<tr><td>${x.id}</td><td>${x.date}</td><td>${x.customer}</td><td>${x.type}</td><td>${x.guests}</td><td>${money(x.total)}</td><td>${money(x.advance)}</td><td>${money(x.due)}</td><td><span class="badge ${x.due<=0?'gold':''}">${x.due<=0?'Paid':'Pending'}</span></td><td><button class="action del" onclick="del('b',${n})">Delete</button></td></tr>`).join("");
