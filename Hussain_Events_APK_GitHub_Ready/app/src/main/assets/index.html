@@ -123,6 +123,22 @@ input,select{width:100%;padding:10px;border:1px solid #ccd6d0;border-radius:8px;
 </section>
 
 </main></div>
+ <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBQIpDHEMbUgxj-sEe17mX7rKm8OQQB13A",
+  authDomain: "hussain-events-v2.firebaseapp.com",
+  projectId: "hussain-events-v2",
+  storageBucket: "hussain-events-v2.firebasestorage.app",
+  messagingSenderId: "844531959575",
+  appId: "1:844531959575:web:e5945f5af9fc75d5451952"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
 <script>
 const KEY={b:"he_bookings_v2",e:"he_expenses_v2",s:"he_stock_v2",st:"he_staff_v2"};
 const get=k=>JSON.parse(localStorage.getItem(KEY[k])||"[]"), set=(k,v)=>localStorage.setItem(KEY[k],JSON.stringify(v));
