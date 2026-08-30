@@ -36,9 +36,11 @@ input,select{width:100%;padding:10px;border:1px solid #ccd6d0;border-radius:8px;
 <div id="login" class="login"><div class="loginbox">
 <img src="hussain-events-logo.png" class="logo" alt="Hussain Events">
 <h2>Hussain Events</h2><div class="muted">Full Business Management System</div>
-<input id="pin" class="pin" type="password" inputmode="numeric" maxlength="6" placeholder="PIN / پن">
+<input id="email" class="pin" type="email" placeholder="Email / ای میل">
+
+<input id="pin" class="pin" type="password" placeholder="Password / پاس ورڈ">
 <button class="primary" style="width:100%" onclick="doLogin()">Login / داخل ہوں</button>
-<p class="muted">Demo access PIN: <b>123456</b>. Production deployment must replace this with server-side authentication.</p>
+
 </div></div>
 
 <div id="app">
@@ -147,11 +149,13 @@ const KEY={b:"he_bookings_v2",e:"he_expenses_v2",s:"he_stock_v2",st:"he_staff_v2
 const get=k=>JSON.parse(localStorage.getItem(KEY[k])||"[]"), set=(k,v)=>localStorage.setItem(KEY[k],JSON.stringify(v));
 const money=n=>"Rs "+Number(n||0).toLocaleString();
 async function doLogin(){
-  const email = prompt("Email / ای میل");
-  if(!email) return;
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("pin").value;
 
-  const password = prompt("Password / پاس ورڈ");
-  if(!password) return;
+  if(!email || !password){
+    alert("Email اور Password دونوں درج کریں");
+    return;
+  }
 
   try {
     await firebase.auth().signInWithEmailAndPassword(email, password);
