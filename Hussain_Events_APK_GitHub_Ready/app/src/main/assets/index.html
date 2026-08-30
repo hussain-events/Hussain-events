@@ -149,6 +149,7 @@ const KEY={b:"he_bookings_v2",e:"he_expenses_v2",s:"he_stock_v2",st:"he_staff_v2
 const get=k=>JSON.parse(localStorage.getItem(KEY[k])||"[]"), set=(k,v)=>localStorage.setItem(KEY[k],JSON.stringify(v));
 const money=n=>"Rs "+Number(n||0).toLocaleString();
 async function doLogin(){
+ alert("Login button working");
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("pin").value;
 
