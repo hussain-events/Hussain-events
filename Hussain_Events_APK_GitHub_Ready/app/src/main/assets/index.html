@@ -127,6 +127,7 @@ input,select{width:100%;padding:10px;border:1px solid #ccd6d0;border-radius:8px;
 </main></div>
  <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
+ <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-auth-compat.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -145,7 +146,24 @@ const db = firebase.firestore();
 const KEY={b:"he_bookings_v2",e:"he_expenses_v2",s:"he_stock_v2",st:"he_staff_v2"};
 const get=k=>JSON.parse(localStorage.getItem(KEY[k])||"[]"), set=(k,v)=>localStorage.setItem(KEY[k],JSON.stringify(v));
 const money=n=>"Rs "+Number(n||0).toLocaleString();
-function doLogin(){if(document.getElementById("pin").value==="123456"){sessionStorage.setItem("he_auth","1");openApp()}else alert("Invalid PIN / غلط PIN")}
+async function doLogin(){
+  const email = prompt("Email / ای میل");
+  if(!email) return;
+
+  const password = prompt("Password / پاس ورڈ");
+  if(!password) return;
+
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, password);
+
+    sessionStorage.setItem("he_auth","1");
+    openApp();
+
+  } catch(error) {
+    console.error(error);
+    alert("Login failed / لاگ اِن ناکام: " + error.message);
+  }
+}
 function openApp(){login.style.display="none";app.style.display="block";render()}
 function logout(){sessionStorage.removeItem("he_auth");location.reload()}
 function go(id,btn){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");render()}
