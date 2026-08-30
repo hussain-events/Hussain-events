@@ -39,7 +39,7 @@ input,select{width:100%;padding:10px;border:1px solid #ccd6d0;border-radius:8px;
 <input id="email" class="pin" type="email" placeholder="Email / ای میل">
 
 <input id="pin" class="pin" type="password" placeholder="Password / پاس ورڈ">
-<button class="primary" style="width:100%" onclick="doLogin()">Login / داخل ہوں</button>
+<button id="loginBtn" class="primary" style="width:100%" type="button">Login / داخل ہوں</button>
 
 </div></div>
 
@@ -268,5 +268,9 @@ expenseForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("
 stockForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("s");a.push({item:f.get("item"),unit:f.get("unit"),qty:+f.get("qty"),cost:+f.get("cost"),reorder:+f.get("reorder"),supplier:f.get("supplier")});set("s",a);e.target.reset();render()}
 staffForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("st");a.push({name:f.get("name"),role:f.get("role"),salary:+f.get("salary"),advance:+f.get("advance"),contact:f.get("contact")});set("st",a);e.target.reset();render()}
 if(sessionStorage.getItem("he_auth")==="1")openApp();
+ document.getElementById("loginBtn").addEventListener("click", function() {
+  alert("Login button working");
+  doLogin();
+});
 </script>
 </body></html>
