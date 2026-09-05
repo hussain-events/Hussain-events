@@ -148,29 +148,60 @@ const db = firebase.firestore();
 const KEY={b:"he_bookings_v2",e:"he_expenses_v2",s:"he_stock_v2",st:"he_staff_v2"};
 const get=k=>JSON.parse(localStorage.getItem(KEY[k])||"[]"), set=(k,v)=>localStorage.setItem(KEY[k],JSON.stringify(v));
 const money=n=>"Rs "+Number(n||0).toLocaleString();
-async function doLogin(){
- alert("Login button working");
+const auth = firebase.auth();
+
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+async function doLogin() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("pin").value;
+  const btn = document.getElementById("loginBtn");
 
-  if(!email || !password){
+  if (!email || !password) {
     alert("Email اور Password دونوں درج کریں");
     return;
   }
 
+  btn.disabled = true;
+  btn.textContent = "Logging in... / لاگ اِن ہو رہا ہے";
+
   try {
-    await firebase.auth().signInWithEmailAndPassword(email, password);
+    await auth.signInWithEmailAndPassword(email, password);
+  } catch (error) {
+    console.error("Firebase Login Error:", error);
 
-    sessionStorage.setItem("he_auth","1");
-    openApp();
+    let message = "Login failed / لاگ اِن ناکام";
 
-  } catch(error) {
-    console.error(error);
-    alert("Login failed / لاگ اِن ناکام: " + error.message);
+    if (error.code === "auth/invalid-credential") {
+      message = "Email یا Password غلط ہے";
+    } else if (error.code === "auth/user-not-found") {
+      message = "یہ Email Firebase میں موجود نہیں";
+    } else if (error.code === "auth/wrong-password") {
+      message = "Password غلط ہے";
+    } else if (error.code === "auth/invalid-email") {
+      message = "Email درست نہیں ہے";
+    } else if (error.code === "auth/network-request-failed") {
+      message = "Internet connection کا مسئلہ ہے";
+    }
+
+    alert(message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Login / داخل ہوں";
   }
 }
-function openApp(){login.style.display="none";app.style.display="block";render()}
-function logout(){sessionStorage.removeItem("he_auth");location.reload()}
+
+function openApp() {
+  document.getElementById("login").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  render();
+}
+
+function logout() {
+  auth.signOut().then(() => {
+    location.reload();
+  });
+}
 function go(id,btn){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");render()}
 function del(k,n){let a=get(k);a.splice(n,1);set(k,a);render()}
  async function loadEventsFromFirebase() {
@@ -267,10 +298,21 @@ bookingForm.onsubmit = async e => {
 expenseForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("e");a.push({date:f.get("date"),cat:f.get("cat"),paidto:f.get("paidto"),desc:f.get("desc"),amount:+f.get("amount"),method:f.get("method")});set("e",a);e.target.reset();render()}
 stockForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("s");a.push({item:f.get("item"),unit:f.get("unit"),qty:+f.get("qty"),cost:+f.get("cost"),reorder:+f.get("reorder"),supplier:f.get("supplier")});set("s",a);e.target.reset();render()}
 staffForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("st");a.push({name:f.get("name"),role:f.get("role"),salary:+f.get("salary"),advance:+f.get("advance"),contact:f.get("contact")});set("st",a);e.target.reset();render()}
-if(sessionStorage.getItem("he_auth")==="1")openApp();
- document.getElementById("loginBtn").addEventListener("click", function() {
-  alert("Login button working");
-  doLogin();
+auth.onAuthStateChanged(function(user) {
+  if (user) {
+    openApp();
+  } else {
+    document.getElementById("login").style.display = "grid";
+    document.getElementById("app").style.display = "none";
+  }
+});
+
+document.getElementById("loginBtn").addEventListener("click", doLogin);
+
+document.getElementById("pin").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    doLogin();
+  }
 });
 </script>
 </body></html>
