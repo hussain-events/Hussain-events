@@ -265,27 +265,80 @@ bookingForm.onsubmit = async e => {
 
   let id = "HE-" + String(Date.now()).slice(-6);
 
-  try {
-    await db.collection("Events").add({
-      id: id,
-      customerName: f.get("customer"),
-      mobile: f.get("mobile"),
-      eventDate: f.get("date"),
-      eventType: f.get("type"),
-      guests: guests,
-      rate: rate,
-      hallCharges: +f.get("hall") || 0,
-      decoration: +f.get("decor") || 0,
-      generator: +f.get("generator") || 0,
-      otherCharges: +f.get("other") || 0,
-      discount: discount,
-      totalAmount: total,
-      advanceAmount: advance,
-      remainingAmount: total - advance,
-      venue: "Hussain Events",
-      status: (total - advance) <= 0 ? "Paid" : "Booked",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+ try {
+    // Customer ID
+    const mobileDigits = mobile.replace(/\D/g, "");
+    const customerRef = mobileDigits
+        ? db.collection("Customers").doc("C" + mobileDigits)
+        : db.collection("Customers").doc();
+
+    // New Booking document
+    const bookingRef = db.collection("Events").doc();
+
+    // Firebase batch
+    const batch = db.batch();
+
+    // 1. Customer save/update
+    batch.set(customerRef, {
+        name: customer,
+        mobile: mobile,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    // 2. Booking / Event save
+    batch.set(bookingRef, {
+        id: id,
+        customerId: customerRef.id,
+        customerName: customer,
+        mobile: mobile,
+        eventDate: f.get("date"),
+        eventType: f.get("type"),
+        guests: guests,
+        rate: rate,
+        hallCharges: +f.get("hall") || 0,
+        decoration: +f.get("decor") || 0,
+        generator: +f.get("generator") || 0,
+        otherCharges: +f.get("other") || 0,
+        discount: discount,
+        totalAmount: total,
+        advanceAmount: advance,
+        remainingAmount: total - advance,
+        venue: "Hussain Events",
+        status: (total - advance) <= 0 ? "Paid" : "Booked",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+
+    // 3. Advance Payment save
+    if (advance > 0) {
+        const paymentRef = db.collection("Payments").doc();
+
+        batch.set(paymentRef, {
+            paymentId: paymentRef.id,
+            bookingId: bookingRef.id,
+            bookingNo: id,
+            customerId: customerRef.id,
+            customerName: customer,
+            mobile: mobile,
+            amount: advance,
+            paymentType: "Advance",
+            paymentMethod: "Cash",
+            paymentDate: new Date().toISOString().slice(0, 10),
+            notes: "Booking advance payment",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    }
+
+    // Save everything together
+    await batch.commit();
+
+    e.target.reset();
+    alert("Booking + Customer + Payment Firebase میں محفوظ ہو گئے۔");
+    await render();
+
+} catch (error) {
+    console.error(error);
+    alert("Save Error: " + error.message);
+}
 
     e.target.reset();
     alert("Booking saved to Firebase / بکنگ محفوظ ہوگئی");
