@@ -122,8 +122,50 @@ input,select{width:100%;padding:10px;border:1px solid #ccd6d0;border-radius:8px;
 <section id="customers" class="page"><div class="card"><h2>Customer Ledger / گاہک کھاتہ</h2><div class="tablewrap"><table><thead><tr><th>Customer</th><th>Mobile</th><th>Bookings</th><th>Total</th><th>Advance</th><th>Due</th></tr></thead><tbody id="customerRows"></tbody></table></div></div></section>
 
 <section id="reports" class="page">
-<div class="cards"><div class="card">Revenue / آمدن<div class="metric gold" id="rRevenue">Rs 0</div></div><div class="card">Expenses / اخراجات<div class="metric" id="rExpenses">Rs 0</div></div><div class="card">Profit / منافع<div class="metric profit" id="rProfit">Rs 0</div></div></div>
-<div class="card"><h2>Business Report / کاروباری رپورٹ</h2><div id="reportText"></div><button class="primary" onclick="window.print()">Print / پرنٹ</button></div>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Revenue / آمدن</h3>
+      <div class="metric gold" id="rRevenue">Rs 0</div>
+    </div>
+
+    <div class="card">
+      <h3>Expenses / اخراجات</h3>
+      <div class="metric" id="rExpenses">Rs 0</div>
+    </div>
+
+    <div class="card">
+      <h3>Profit / منافع</h3>
+      <div class="metric profit" id="rProfit">Rs 0</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Business Reports / کاروباری رپورٹس</h2>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin:15px 0;">
+      <button class="primary" onclick="generateReport('daily')">
+        Daily Report / روزانہ
+      </button>
+
+      <button class="primary" onclick="generateReport('monthly')">
+        Monthly Report / ماہانہ
+      </button>
+
+      <button class="primary" onclick="generateReport('yearly')">
+        Yearly Report / سالانہ
+      </button>
+
+      <button class="primary" onclick="window.print()">
+        Print / پرنٹ
+      </button>
+    </div>
+
+    <div id="reportText">
+      Report یہاں ظاہر ہوگی۔
+    </div>
+  </div>
+
 </section>
 
 </main></div>
