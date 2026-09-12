@@ -291,6 +291,111 @@ const b=await loadEventsFromFirebase(),e=get("e"),s=get("s"),st=get("st");
  rRevenue.textContent=money(rev);rExpenses.textContent=money(exp);rProfit.textContent=money(rev-exp);
  reportText.innerHTML=`<p><b>Total Bookings / کل بکنگ:</b> ${b.length}</p><p><b>Total Revenue / کل آمدن:</b> ${money(rev)}</p><p><b>Total Expenses / کل اخراجات:</b> ${money(exp)}</p><p><b>Net Profit / خالص منافع:</b> ${money(rev-exp)}</p><p><b>Advance / ایڈوانس:</b> ${money(adv)}</p><p><b>Outstanding / بقایا:</b> ${money(due)}</p>`;
 }
+ async function generateReport(period) {
+    try {
+        const bookings = await loadEventsFromFirebase();
+        const expenses = get("e");
+
+        const now = new Date();
+
+        let selectedBookings = bookings.filter(b => {
+            if (!b.date) return false;
+
+            let parts = b.date.split(".");
+            let eventDate;
+
+            if (parts.length === 3) {
+                eventDate = new Date(
+                    Number(parts[2]),
+                    Number(parts[1]) - 1,
+                    Number(parts[0])
+                );
+            } else {
+                eventDate = new Date(b.date);
+            }
+
+            if (isNaN(eventDate)) return false;
+
+            if (period === "daily") {
+                return eventDate.toDateString() === now.toDateString();
+            }
+
+            if (period === "monthly") {
+                return eventDate.getMonth() === now.getMonth() &&
+                       eventDate.getFullYear() === now.getFullYear();
+            }
+
+            if (period === "yearly") {
+                return eventDate.getFullYear() === now.getFullYear();
+            }
+
+            return true;
+        });
+
+        const revenue = selectedBookings.reduce(
+            (sum, b) => sum + Number(b.total || 0), 0
+        );
+
+        const advance = selectedBookings.reduce(
+            (sum, b) => sum + Number(b.advance || 0), 0
+        );
+
+        const remaining = selectedBookings.reduce(
+            (sum, b) => sum + Number(b.due || 0), 0
+        );
+
+        const bookingDates = selectedBookings.map(b => b.date);
+
+        let reportTitle = "";
+
+        if (period === "daily") {
+            reportTitle = "Daily Report / روزانہ رپورٹ";
+        } else if (period === "monthly") {
+            reportTitle = "Monthly Report / ماہانہ رپورٹ";
+        } else {
+            reportTitle = "Yearly Report / سالانہ رپورٹ";
+        }
+
+        reportText.innerHTML = `
+            <div class="card">
+                <h2>${reportTitle}</h2>
+
+                <p><b>Total Bookings / کل بکنگ:</b>
+                ${selectedBookings.length}</p>
+
+                <p><b>Total Revenue / کل آمدن:</b>
+                Rs ${money(revenue)}</p>
+
+                <p><b>Total Advance / کل ایڈوانس:</b>
+                Rs ${money(advance)}</p>
+
+                <p><b>Total Remaining / بقایا رقم:</b>
+                Rs ${money(remaining)}</p>
+
+                <h3>Booking Details / بکنگ کی تفصیل</h3>
+
+                ${
+                    selectedBookings.length
+                    ? selectedBookings.map(b => `
+                        <p>
+                        ${b.date} —
+                        ${b.customer} —
+                        ${b.type} —
+                        Total: Rs ${money(b.total)} —
+                        Advance: Rs ${money(b.advance)} —
+                        Due: Rs ${money(b.due)}
+                        </p>
+                    `).join("")
+                    : "<p>No bookings found / کوئی بکنگ نہیں ملی</p>"
+                }
+            </div>
+        `;
+
+    } catch (error) {
+        console.error(error);
+        alert("Report Error: " + error.message);
+    }
+}
 bookingForm.onsubmit = async e => {
   e.preventDefault();
 
