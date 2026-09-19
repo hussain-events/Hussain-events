@@ -382,14 +382,6 @@ bookingForm.onsubmit = async e => {
     console.error(error);
     alert("Save Error: " + error.message);
 }
-
-    e.target.reset();
-    alert("Booking saved to Firebase / بکنگ محفوظ ہوگئی");
-    await render();
-  } catch (error) {
-    console.error(error);
-    alert("Booking save failed: " + error.message);
-  }
 };
 expenseForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("e");a.push({date:f.get("date"),cat:f.get("cat"),paidto:f.get("paidto"),desc:f.get("desc"),amount:+f.get("amount"),method:f.get("method")});set("e",a);e.target.reset();render()}
 stockForm.onsubmit=e=>{e.preventDefault();let f=new FormData(e.target),a=get("s");a.push({item:f.get("item"),unit:f.get("unit"),qty:+f.get("qty"),cost:+f.get("cost"),reorder:+f.get("reorder"),supplier:f.get("supplier")});set("s",a);e.target.reset();render()}
