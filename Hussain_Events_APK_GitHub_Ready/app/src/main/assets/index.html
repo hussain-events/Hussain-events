@@ -296,6 +296,8 @@ bookingForm.onsubmit = async e => {
   e.preventDefault();
 
   let f = new FormData(e.target);
+  let customer = f.get("customer") || "";
+  let mobile = f.get("mobile") || "";
   let guests = +f.get("guests");
   let rate = +f.get("rate");
 
